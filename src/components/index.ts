@@ -1,3 +1,5 @@
+export { ProductMobileSlideshow } from "./product/slideshow/ProductMobileSlideshow";
+
 export { PageNotFound } from "./ui/not-found/PageNotFound";
 export { ProductGrid } from "./products/product-grid/ProductGrid";
 export { ProductGridItem } from "./products/product-grid/ProductGridItem";
