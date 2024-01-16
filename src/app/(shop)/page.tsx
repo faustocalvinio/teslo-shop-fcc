@@ -1,8 +1,9 @@
-import { getPaginatedProductWithImages } from "@/actions";
-import { ProductGrid, Title } from "@/components";
-import { initialData } from "@/seed/seed";
+export const revalidate = 60;
 
-const products = initialData.products;
+import { redirect } from "next/navigation";
+
+import { Pagination, ProductGrid, Title } from "@/components";
+import { getPaginatedProductsWithImages } from "@/actions";
 
 interface Props {
    searchParams: {
@@ -12,8 +13,13 @@ interface Props {
 
 export default async function Home({ searchParams }: Props) {
    const page = searchParams.page ? parseInt(searchParams.page) : 1;
-   const { products } = await getPaginatedProductWithImages({ page });
-   // console.log(searchParams);
+
+   const { products, currentPage, totalPages } =
+      await getPaginatedProductsWithImages({ page });
+
+   if (products.length === 0) {
+      redirect("/");
+   }
 
    return (
       <>
@@ -22,7 +28,10 @@ export default async function Home({ searchParams }: Props) {
             subtitle="Todos los productos"
             className="mb-2"
          />
+
          <ProductGrid products={products} />
+
+         <Pagination totalPages={totalPages} />
       </>
    );
 }
