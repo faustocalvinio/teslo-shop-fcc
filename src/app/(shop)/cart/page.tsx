@@ -1,8 +1,8 @@
-import { QuantitySelector, Title } from "@/components";
+import { Title } from "@/components";
 import { initialData } from "@/seed/seed";
-import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { ProductsInCart } from "./ui/ProductsInCart";
+import { OrderSummary } from "./ui/OrderSummary";
 
 const productsInCart = [
    initialData.products[0],
@@ -24,31 +24,8 @@ export default function CartPage() {
                      Continua comprando
                   </Link>
 
-                  {productsInCart.map((product) => (
-                     <>
-                        <div key={product.slug} className="flex mb-3">
-                           <Image
-                              src={`/products/${product.images[0]}`}
-                              alt={product.title}
-                              width={100}
-                              height={100}
-                              className="mr-5 rounded"
-                              style={{
-                                 width: "100px",
-                                 height: "100px",
-                              }}
-                           />
-                           <div>
-                              <p>{product.title}</p>
-                              <p>{product.price}</p>
-                              <QuantitySelector quantity={3} />
-                              <button className="underline mt-3">
-                                 Remover
-                              </button>
-                           </div>
-                        </div>
-                     </>
-                  ))}
+                  <ProductsInCart />
+                  
                </div>
 
                {/* resumen */}
@@ -56,16 +33,7 @@ export default function CartPage() {
                <div className="bg-white rounded-lg shadow-lg p-7 h-fit ">
                   <h2 className="mb-2 text-2xl">Resumen de orden</h2>
                   <div className="grid grid-cols-2">
-                     <span>No. Productos</span>
-                     <span className="text-right">3 Productos</span>
-                     <span>Subtotal</span>
-                     <span className="text-right">$ 139</span>
-
-                     <span>Impuestos (15%)</span>
-                     <span className="text-right">$ 15</span>
-
-                     <span className="text-2xl mt-5">Total</span>
-                     <span className="text-2xl mt-5 text-right">$ 155</span>
+                     <OrderSummary />
                   </div>
                   <div className="mt-5 w-full">
                      <Link
