@@ -7,16 +7,20 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed":"ts-node src/seed/seed-database.ts"
+    "seed": "ts-node src/seed/seed-database.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.8.0",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^2.4.3",
     "clsx": "^2.1.0",
     "next": "14.0.4",
+    "next-auth": "^5.0.0-beta.5",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^4.12.0",
     "swiper": "^11.0.5",
+    "zod": "^3.22.4",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
