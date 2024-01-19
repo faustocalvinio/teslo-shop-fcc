@@ -34,11 +34,10 @@ export const authConfig: NextAuthConfig = {
             if (!bcryptjs.compareSync(password, user.password)) return null;
 
             const { password: _, ...rest } = user;
-            console.log({...rest});
             
             return rest;
          },
       }),
    ],
 };
-export const { signIn, signOut, auth } = NextAuth(authConfig);
+export const { signIn, signOut, auth, handlers } = NextAuth(authConfig);
