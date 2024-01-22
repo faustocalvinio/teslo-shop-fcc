@@ -10,7 +10,17 @@ import { IoInformationOutline } from "react-icons/io5";
 
 export const LoginForm = () => {
    const [errorMessage, dispatch] = useFormState(authenticate, undefined);
-   
+
+   // useEffect(() => {
+   //    console.log(errorMessage);
+   //    if (
+   //       errorMessage === undefined &&
+   //       (errorMessage === "Invalid credentials." ||
+   //          errorMessage === "Something went wrong.")
+   //    )
+   //       return;
+   //    else window.location.replace("/");
+   // }, [errorMessage]);
 
    return (
       <form action={dispatch} className="flex flex-col">
