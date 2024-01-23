@@ -21,12 +21,10 @@ export const authConfig: NextAuthConfig = {
          // } else if (isLoggedIn) {
          //    return Response.redirect(new URL("/dashboard", nextUrl));
          // }
-         console.log({ auth });
          return true;
       },
 
       jwt({ token, user }) {
-         // console.log({token,user});
          if (user) {
             token.data = user;
          }
@@ -34,7 +32,6 @@ export const authConfig: NextAuthConfig = {
       },
       // @ts-ignore
       session({ session, token }) {
-         console.log({ session, token });
          session.user = token.data as any;
          return session;
       },
