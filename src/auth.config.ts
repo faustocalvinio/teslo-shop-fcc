@@ -4,12 +4,27 @@ import { z } from "zod";
 import prisma from "./lib/prisma";
 import bcryptjs from "bcryptjs";
 
+const authenticatedRoutes = [];
+
 export const authConfig: NextAuthConfig = {
    pages: {
       signIn: "/auth/login",
       newUser: "/auth/new-account",
    },
    callbacks: {
+      authorized({ auth, request: { nextUrl } }) {
+         // const isLoggedIn = !!auth?.user;
+         // const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+         // if (isOnDashboard) {
+         //    if (isLoggedIn) return true;
+         //    return false; // Redirect unauthenticated users to login page
+         // } else if (isLoggedIn) {
+         //    return Response.redirect(new URL("/dashboard", nextUrl));
+         // }
+         console.log({ auth });
+         return true;
+      },
+
       jwt({ token, user }) {
          // console.log({token,user});
          if (user) {
@@ -17,12 +32,14 @@ export const authConfig: NextAuthConfig = {
          }
          return token;
       },
-      session({ session,token }) {
-         console.log({session,token});
-         session.user= token.data as any;
+      // @ts-ignore
+      session({ session, token }) {
+         console.log({ session, token });
+         session.user = token.data as any;
          return session;
       },
    },
+
    providers: [
       credentials({
          async authorize(credentials) {
