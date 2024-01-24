@@ -1,4 +1,6 @@
-export { Provider } from "./providers/Provider";
+export { PayPalButton } from "./paypal/PayPalButton";
+
+export { Providers } from "./providers/Providers";
 
 export { Footer } from "./ui/footer/Footer";
 export { PageNotFound } from "./ui/not-found/PageNotFound";

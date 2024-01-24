@@ -4,13 +4,16 @@ import { placeOrder } from "@/actions";
 import { useAddressStore, useCartStore } from "@/store";
 import { currencyFormatter, sleep } from "@/utils";
 import clsx from "clsx";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export const PlaceOrder = () => {
+   const router = useRouter();
    const [loaded, setLoaded] = useState(false);
    const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+   const [errorMessage, setErrorMessage] = useState("");
    const address = useAddressStore((state) => state.address);
-
+   const clearCart = useCartStore((state) => state.clearCart);
    const { itemsInCart, subTotal, tax, totalPrice } = useCartStore((state) =>
       state.getSummaryInformation()
    );
@@ -22,19 +25,20 @@ export const PlaceOrder = () => {
 
    async function onPlaceOrder() {
       setIsPlacingOrder(true);
-      //   await sleep(2);
       const productsToOrder = cart.map((product) => ({
          productId: product.id,
          size: product.size,
          quantity: product.quantity,
       }));
 
-      // console.log({ address, productsToOrder });
-
-      // TODO SERVER ACTION
       const resp = await placeOrder(productsToOrder, address);
-      console.log(resp);
-      
+      if (!resp.ok) {
+         setIsPlacingOrder(false);
+         setErrorMessage(resp.message!);
+         return;
+      }
+      clearCart();
+      router.replace("/orders/" + resp.order?.id);
       setIsPlacingOrder(false);
    }
 
@@ -87,8 +91,8 @@ export const PlaceOrder = () => {
                {currencyFormatter(totalPrice)}
             </span>
          </div>
+         <p className="text-red-500 mb-4">{errorMessage}</p>
          <div className="mt-5 w-full">
-            {/* <p className="text-red-500 mb-4">Error de creacion</p> */}
             <button
                className={clsx({
                   "btn-primary": !isPlacingOrder,

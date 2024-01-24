@@ -54,7 +54,10 @@ export const useCartStore = create<State>()(
             );
             set({ cart: updatedCartProducts });
          },
-         clearCart: () => {},
+         clearCart: () => {
+            set({ cart: [] });
+            // TODO LOCAL STORAGE?
+         },
          getTotalItems: () => {
             const { cart } = get();
 
