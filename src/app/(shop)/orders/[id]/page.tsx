@@ -1,5 +1,10 @@
 import { getOrderById } from "@/actions";
-import { PayPalButton, QuantitySelector, Title } from "@/components";
+import {
+   OrderStatus,
+   PayPalButton,
+   QuantitySelector,
+   Title,
+} from "@/components";
 import { initialData } from "@/seed/seed";
 import clsx from "clsx";
 import Image from "next/image";
@@ -34,23 +39,7 @@ export default async function CartPage({ params }: Props) {
             <Title title={`Orden #${id}`} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
                <div className="flex flex-col mt-5">
-                  <div
-                     className={clsx(
-                        "flex items-center rounded-lg py-2 px-3.5 text-xs font-bold text-white mb-5",
-                        {
-                           "bg-red-500": !order.isPaid,
-                           "bg-green-700": order.isPaid,
-                        }
-                     )}
-                  >
-                     <IoCardOutline size={30} />
-                     {order.isPaid ? (
-                        <span className="mx-2">Orden paga</span>
-                     ) : (
-                        <span className="mx-2">Pendiente de pago</span>
-                     )}
-                  </div>
-
+                  <OrderStatus isPaid={order.isPaid} />
                   {order.OrderItem.map((item) => (
                      <>
                         <div key={crypto.randomUUID()} className="flex mb-3">
@@ -72,9 +61,6 @@ export default async function CartPage({ params }: Props) {
                                  Subtotal:{" "}
                                  {currencyFormatter(item.price * item.quantity)}
                               </p>
-                              <button className="underline mt-3">
-                                 Remover
-                              </button>
                            </div>
                         </div>
                      </>
@@ -99,7 +85,7 @@ export default async function CartPage({ params }: Props) {
                   <div className="w-full h-0.5 rounded bg-gray-200 mb-10" />
 
                   <h2 className="mb-2 text-2xl">Resumen de orden</h2>
-                  <div className="grid grid-cols-2">
+                  <div className="grid grid-cols-2 mb-4">
                      <span>No. Productos</span>
                      <span className="text-right">
                         {order?.itemsInOrder} Producto(s)
@@ -119,14 +105,19 @@ export default async function CartPage({ params }: Props) {
                         {currencyFormatter(order?.total!)}
                      </span>
                   </div>
-                  <PayPalButton />
+                  {order.isPaid ? (
+                     <OrderStatus isPaid={order.isPaid ?? false} />
+                  ) : (
+                     <PayPalButton amount={order.total} orderId={order.id} />
+                  )}
                </div>
             </div>
          </div>
       </div>
    );
 }
-{/* <div
+{
+   /* <div
                      className={clsx(
                         "flex items-center rounded-lg py-2 px-3.5 text-xs mt-6 font-bold text-white mb-5",
                         {
@@ -141,4 +132,5 @@ export default async function CartPage({ params }: Props) {
                      ) : (
                         <span className="mx-2">Pendiente de pago</span>
                      )}
-                  </div> */}
+                  </div> */
+}
