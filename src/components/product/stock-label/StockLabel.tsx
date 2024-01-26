@@ -13,8 +13,7 @@ export const StockLabel = ({ slug }: Props) => {
    const [isLoading, setIsLoading] = useState(true);
 
    useEffect(() => {
-      getStock();
-   // eslint-disable-next-line react-hooks/exhaustive-deps
+      getStock();   
    }, []);
 
    const getStock = async () => {

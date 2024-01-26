@@ -13,7 +13,6 @@ interface State {
       phone: string;
    };
 
-   // Methods
    setAddress: (address: State["address"]) => void;
 }
 

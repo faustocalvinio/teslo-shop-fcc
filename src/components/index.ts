@@ -1,3 +1,5 @@
+export { ProductImage } from "./product/product-image/ProductImage";
+
 export { OrderStatus } from "./orders/OrderStatus";
 
 export { PayPalButton } from "./paypal/PayPalButton";

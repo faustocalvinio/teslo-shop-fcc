@@ -31,11 +31,10 @@ export const Pagination = ({ totalPages }: Props) => {
       }
 
       if (+pageNumber <= 0) {
-         return `${pathname}`; //   href="/kid";
+         return `${pathname}`;
       }
 
       if (+pageNumber > totalPages) {
-         // Next >
          return `${pathname}?${params.toString()}`;
       }
 
