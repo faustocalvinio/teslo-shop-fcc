@@ -3,11 +3,19 @@
 import { useState } from "react";
 import { Swiper as SwiperObject } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, FreeMode, Navigation, Thumbs } from "swiper/modules";
+import {
+   Autoplay,
+   FreeMode,
+   Navigation,
+   Pagination,
+   Thumbs,
+} from "swiper/modules";
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
+import "swiper/css/pagination";
+
 import "./slideshow.css";
 import { ProductImage } from "../product-image/ProductImage";
 
@@ -31,6 +39,11 @@ export const ProductSlideshow = ({ images, title, className }: Props) => {
             }
             spaceBetween={10}
             navigation={true}
+            pagination={{
+               bulletClass: "swiper-pagination-bullet",
+               bulletActiveClass: "swiper-pagination-bullet-active",
+               enabled: true,
+            }}
             autoplay={{
                delay: 2500,
             }}
@@ -38,7 +51,7 @@ export const ProductSlideshow = ({ images, title, className }: Props) => {
                swiper:
                   thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
             }}
-            modules={[FreeMode, Navigation, Thumbs, Autoplay]}
+            modules={[FreeMode, Navigation, Thumbs, Autoplay, Pagination]}
             className="mySwiper2"
          >
             {images.map((image) => (
