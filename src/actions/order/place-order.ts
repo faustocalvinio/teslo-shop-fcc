@@ -3,12 +3,19 @@
 import { auth } from "@/auth.config";
 import { Address, Size } from "@/interfaces";
 import prisma from "@/lib/prisma";
-
+import * as nodemailer from "nodemailer";
 interface ProductToOrder {
    productId: string;
    quantity: number;
    size: Size;
 }
+const transporter = nodemailer.createTransport({
+   service: "gmail",
+   auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_KEY,
+   },
+});
 
 export const placeOrder = async (
    productIds: ProductToOrder[],
@@ -111,6 +118,32 @@ export const placeOrder = async (
                orderId: order.id,
             },
          });
+         
+         const fecha = new Date();
+         const dia = fecha.getDate();
+         const mes = fecha.getMonth() + 1;
+         const anio = fecha.getFullYear();
+
+         const info = await transporter.sendMail({
+            from: "Teslo Shop Local",
+            to: `${session?.user.email}`,
+            subject: `Orden #${order.id} - ${dia}/${mes}/${anio}`,
+            html: `
+               <h1>Gracias por tu compra</h1>
+               <p>Tu orden ha sido procesada con éxito.</p>
+               <h2>Detalles de la orden:</h2>
+               <ul>
+                  ${productIds
+                     .map(
+                        (item) =>
+                           `<li>${item.productId} - ${item.quantity} - ${item.size}</li>`
+                     )
+                     .join("")}
+               </ul> 
+               `,
+         });
+
+         console.log("Message sent: %s", info.messageId);
          return {
             order: order,
             updatedProducts: updatedProducts,

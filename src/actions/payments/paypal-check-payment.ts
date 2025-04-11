@@ -1,12 +1,21 @@
 "use server";
 
+import { auth } from "@/auth.config";
 import { PayPalOrderStatusResponse } from "@/interfaces";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-
+import * as nodemailer from "nodemailer";
+import { getOrderById } from "../order/get-order-by-id";
+const transporter = nodemailer.createTransport({
+   service: "gmail",
+   auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_KEY,
+   },
+});
 export const paypalCheckPayment = async (paypalTransactionId: string) => {
    const authToken = await getPayPalBearerToken();
-
+   const session = await auth();
    console.log({ authToken });
    if (!authToken) {
       return {
@@ -40,6 +49,23 @@ export const paypalCheckPayment = async (paypalTransactionId: string) => {
          },
       });
       revalidatePath(`/orders/${orderId}`);
+
+      // const order = getOrderById(purchase_units[0].invoice_id)
+
+      const order = await prisma.order.findUnique({
+         where: { id: purchase_units[0].invoice_id },
+      });
+      const info = await transporter.sendMail({
+         from: "Teslo Shop Local",
+         to: `${session?.user.email}`,
+         subject: `Orden del dia ${order?.createdAt} ${order?.total} - Pago completado`,
+         html: `
+            <h1>Gracias por tu compra</h1>
+            <p>Tu pago se completo con exito</p>
+            <h2>Detalles de la orden:</h2>     
+            <h3>Coste ${order?.total}</h3>    
+            `,
+      });
       return {
          ok: true,
       };
