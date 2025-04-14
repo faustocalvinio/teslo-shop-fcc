@@ -4,15 +4,10 @@ import { auth } from "@/auth.config";
 import { PayPalOrderStatusResponse } from "@/interfaces";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import * as nodemailer from "nodemailer";
+
 import { getOrderById } from "../order/get-order-by-id";
-const transporter = nodemailer.createTransport({
-   service: "gmail",
-   auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_KEY,
-   },
-});
+import { sendPaymentConfirmationEmail } from "../email/payment-confirmation";
+
 export const paypalCheckPayment = async (paypalTransactionId: string) => {
    const authToken = await getPayPalBearerToken();
    const session = await auth();
@@ -55,17 +50,24 @@ export const paypalCheckPayment = async (paypalTransactionId: string) => {
       const order = await prisma.order.findUnique({
          where: { id: purchase_units[0].invoice_id },
       });
-      const info = await transporter.sendMail({
-         from: "Teslo Shop Local",
-         to: `${session?.user.email}`,
-         subject: `Orden del dia ${order?.createdAt} ${order?.total} - Pago completado`,
-         html: `
-            <h1>Gracias por tu compra</h1>
-            <p>Tu pago se completo con exito</p>
-            <h2>Detalles de la orden:</h2>     
-            <h3>Coste ${order?.total}</h3>    
-            `,
+      sendPaymentConfirmationEmail({
+         to: session?.user.email || "",
+         name: session?.user.name|| "",
+         paymentId: paypalTransactionId,
+         amount: order?.total || 100,
+         date: order?.createdAt.toString() || new Date().toString(),
       });
+      // const info = await transporter.sendMail({
+      //    from: "Teslo Shop Local",
+      //    to: `${session?.user.email}`,
+      //    subject: `Orden del dia ${order?.createdAt} ${order?.total} - Pago completado`,
+      //    html: `
+      //       <h1>Gracias por tu compra</h1>
+      //       <p>Tu pago se completo con exito</p>
+      //       <h2>Detalles de la orden:</h2>     
+      //       <h3>Coste ${order?.total}</h3>    
+      //       `,
+      // });
       return {
          ok: true,
       };

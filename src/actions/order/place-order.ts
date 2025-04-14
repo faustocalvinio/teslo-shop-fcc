@@ -4,6 +4,7 @@ import { auth } from "@/auth.config";
 import { Address, Size } from "@/interfaces";
 import prisma from "@/lib/prisma";
 import * as nodemailer from "nodemailer";
+import { sendOrderConfirmationEmail } from "../email/order-confirmation";
 interface ProductToOrder {
    productId: string;
    quantity: number;
@@ -118,36 +119,29 @@ export const placeOrder = async (
                orderId: order.id,
             },
          });
-         
-         const fecha = new Date();
-         const dia = fecha.getDate();
-         const mes = fecha.getMonth() + 1;
-         const anio = fecha.getFullYear();
 
-         const info = await transporter.sendMail({
-            from: "Teslo Shop Local",
-            to: `${session?.user.email}`,
-            subject: `Orden #${order.id} - ${dia}/${mes}/${anio}`,
-            html: `
-               <h1>Gracias por tu compra</h1>
-               <p>Tu orden ha sido procesada con éxito.</p>
-               <h2>Detalles de la orden:</h2>
-               <ul>
-                  ${productIds
-                     .map(
-                        (item) =>
-                           `<li>${item.productId} - ${item.quantity} - ${item.size}</li>`
-                     )
-                     .join("")}
-               </ul> 
-               `,
+          const finalProductsOrder = productIds.map((p) => {
+            const product = products.find((product) => product.id === p.productId);
+            if (!product) throw new Error(`Product with id: ${p.productId} not found`);
+            return {
+               quantity: p.quantity,
+               title: product.title,
+            };
+          });
+
+
+         const emailConfirmationInfo = sendOrderConfirmationEmail({
+            id: order.id,
+            emailDestination: session?.user.email,
+            clientName: session?.user.name,
+            finalProductsOrder
          });
-
-         console.log("Message sent: %s", info.messageId);
+         console.log("Email confirmation info: ", emailConfirmationInfo);
          return {
             order: order,
             updatedProducts: updatedProducts,
             orderAddress: orderAddress,
+
          };
       });
 
